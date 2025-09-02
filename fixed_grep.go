@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -13,10 +12,10 @@ type fixedGrep struct {
 	pattern pattern
 }
 
-func (g fixedGrep) grep(path string, buf []byte) {
+func (g fixedGrep) grep(path string, buf []byte) error {
 	f, err := getFileHandler(path)
 	if err != nil {
-		log.Fatalf("open: %s\n", err)
+		return err
 	}
 	defer f.Close()
 
@@ -27,7 +26,7 @@ func (g fixedGrep) grep(path string, buf []byte) {
 		}, func(b []byte) int {
 			return bytes.Index(b, g.pattern.pattern) + 1
 		})
-		return
+		return nil
 	}
 
 	var stash []byte
@@ -38,7 +37,7 @@ func (g fixedGrep) grep(path string, buf []byte) {
 	for {
 		c, err := f.Read(buf)
 		if err != nil && err != io.EOF {
-			log.Fatalf("read: %s\n", err)
+			return err
 		}
 
 		if err == io.EOF {
@@ -105,4 +104,5 @@ func (g fixedGrep) grep(path string, buf []byte) {
 			copy(stash, buf[index:c])
 		}
 	}
+	return nil
 }

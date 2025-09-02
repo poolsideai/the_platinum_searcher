@@ -36,7 +36,10 @@ func (g grep) start() {
 		defer wg.Done()
 		buf := make([]byte, 16384)
 		for path := range g.in {
-			g.grepper.grep(path, buf)
+			if err := g.grepper.grep(path, buf); err != nil {
+				// Skip files that cannot be opened or read
+				continue
+			}
 		}
 	}
 	num := int(math.Max(float64(runtime.NumCPU()), 2.0))
@@ -51,7 +54,7 @@ func (g grep) start() {
 }
 
 type grepper interface {
-	grep(path string, buf []byte)
+	grep(path string, buf []byte) error
 }
 
 func newGrepper(pattern pattern, printer printer, opts Option) grepper {

@@ -2,7 +2,6 @@ package the_platinum_searcher
 
 import (
 	"io"
-	"log"
 	"os"
 )
 
@@ -11,10 +10,10 @@ type extendedGrep struct {
 	pattern pattern
 }
 
-func (g extendedGrep) grep(path string, buf []byte) {
+func (g extendedGrep) grep(path string, buf []byte) error {
 	f, err := getFileHandler(path)
 	if err != nil {
-		log.Fatalf("open: %s\n", err)
+		return err
 	}
 	defer f.Close()
 
@@ -25,16 +24,16 @@ func (g extendedGrep) grep(path string, buf []byte) {
 		}, func(b []byte) int {
 			return g.pattern.regexp.FindIndex(b)[0] + 1
 		})
-		return
+		return nil
 	}
 
 	c, err := f.Read(buf)
 	if err != nil && err != io.EOF {
-		log.Fatalf("read: %s\n", err)
+		return err
 	}
 
 	if err == io.EOF {
-		return
+		return nil
 	}
 
 	// detect encoding.
@@ -45,7 +44,7 @@ func (g extendedGrep) grep(path string, buf []byte) {
 
 	encoding := detectEncoding(buf[:limit])
 	if encoding == ERROR || encoding == BINARY {
-		return
+		return nil
 	}
 
 	// grep each lines.
@@ -54,4 +53,5 @@ func (g extendedGrep) grep(path string, buf []byte) {
 	}, func(b []byte) int {
 		return g.pattern.regexp.FindIndex(b)[0] + 1
 	})
+	return nil
 }

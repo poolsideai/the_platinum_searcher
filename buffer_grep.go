@@ -2,9 +2,9 @@ package the_platinum_searcher
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -14,10 +14,10 @@ type bufferGrep struct {
 	column  bool
 }
 
-func (g bufferGrep) grep(path string, buf []byte) {
+func (g bufferGrep) grep(path string, buf []byte) error {
 	f, err := getFileHandler(path)
 	if err != nil {
-		log.Fatalf("open: %s\n", err)
+		return err
 	}
 	defer f.Close()
 
@@ -36,7 +36,7 @@ loop:
 			break
 		}
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("read %s: %w", path, err)
 		}
 		cbuf := buf[0 : offset+n]
 
@@ -83,6 +83,7 @@ loop:
 		}
 	}
 	g.printer.print(match)
+	return nil
 }
 
 var NewLineBytes = []byte{10}
