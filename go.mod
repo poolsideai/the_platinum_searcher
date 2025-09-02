@@ -1,4 +1,4 @@
-module github.com/monochromegane/the_platinum_searcher
+module github.com/poolsideai/the_platinum_searcher
 
 go 1.23.0
 

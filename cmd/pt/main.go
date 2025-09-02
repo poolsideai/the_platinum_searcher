@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	pt "github.com/monochromegane/the_platinum_searcher"
+	pt "github.com/poolsideai/the_platinum_searcher"
 )
 
 func main() {
