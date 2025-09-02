@@ -1,3 +1,4 @@
+//go:build freebsd || openbsd || netbsd
 // +build freebsd openbsd netbsd
 
 package the_platinum_searcher

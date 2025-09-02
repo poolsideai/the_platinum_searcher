@@ -1,3 +1,4 @@
+//go:build (linux && !appengine) || darwin
 // +build linux,!appengine darwin
 
 package the_platinum_searcher
